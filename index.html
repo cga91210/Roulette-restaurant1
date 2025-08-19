@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roulette du Restaurant</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #fefefe; }
+  #wheel { width: 300px; height: 300px; border-radius: 50%; border: 10px solid #333; margin: 0 auto; position: relative; }
+  #pointer { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 30px solid red; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); }
+  #spin { margin-top: 30px; padding: 15px 30px; font-size: 16px; cursor: pointer; }
+  #result { margin-top: 20px; font-size: 18px; font-weight: bold; color: green; }
+</style>
+</head>
+<body>
+
+<h1>Tournez la roulette et gagnez ! 🎉</h1>
+<div id="wheel">
+  <div id="pointer"></div>
+</div>
+<button id="spin">Tourner la roue</button>
+<div id="result"></div>
+
+<script>
+  const segments = [
+    "10% de réduction",
+    "Boisson gratuite",
+    "Dessert offert",
+    "Petit cadeau surprise",
+    "Merci d'avoir laissé un avis !",
+    "Offre spéciale du jour"
+  ];
+
+  const wheel = document.getElementById("wheel");
+  const spinButton = document.getElementById("spin");
+  const resultDiv = document.getElementById("result");
+
+  // Vérifier cookie
+  if (document.cookie.includes("roulettePlayed=true")) {
+    spinButton.disabled = true;
+    resultDiv.innerText = "Vous avez déjà tourné la roulette !";
+  }
+
+  spinButton.addEventListener("click", () => {
+    // Désactiver le bouton pour éviter les doubles clics
+    spinButton.disabled = true;
+
+    // Calculer un angle aléatoire
+    const randDeg = Math.floor(Math.random() * 360);
+    wheel.style.transition = "transform 5s ease-out";
+    wheel.style.transform = `rotate(${randDeg + 1440}deg)`; // 4 tours complets + angle aléatoire
+
+    // Attendre la fin de l'animation pour afficher le résultat
+    setTimeout(() => {
+      const segmentAngle = 360 / segments.length;
+      const chosenIndex = Math.floor((360 - (randDeg % 360)) / segmentAngle) % segments.length;
+      resultDiv.innerText = `Félicitations ! Vous gagnez : ${segments[chosenIndex]}`;
+
+      // Créer un cookie pour limiter à un tour
+      document.cookie = "roulettePlayed=true; max-age=31536000; path=/"; // valable 1 an
+    }, 5000);
+  });
+</script>
+
+</body>
+</html>
